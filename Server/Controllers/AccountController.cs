@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DLL.Managers.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Server.Models;
 using System.Text.Json;
@@ -9,6 +10,13 @@ namespace Server.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private IAccountManager _accountManager;
+
+        public AccountController(IAccountManager accountManager)
+        {
+            _accountManager = accountManager;
+        }
+
         private class UnsecureAccountModel
         {
             public string Username { get; set; }
@@ -21,7 +29,7 @@ namespace Server.Controllers
         public async Task<bool> Register([FromBody]string accountDetailes)
         {
             var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(accountDetailes);
-
+            string r = _accountManager.Get();
 
             return true;
         }
