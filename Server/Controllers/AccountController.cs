@@ -35,10 +35,11 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        [Route("login")]
-        public async Task<AccountModel> Get(LoginCredentialsModel loginCredentials)
+        [Route("login/{loginCredentials}")]
+        public async Task<AccountModel> Login(string loginCredentials)
         {
-            return new AccountModel() { Username = loginCredentials.Username, Email = loginCredentials.Username };
+            var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(loginCredentials);
+            return new AccountModel { Email = "correctemail@gmail.com", Username = unAcc.Username };
         }
     }
 }
