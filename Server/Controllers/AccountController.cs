@@ -1,7 +1,8 @@
 ﻿using DLL.Managers.Interfaces;
+using DLL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Server.Models;
+using System.Security;
 using System.Text.Json;
 
 namespace Server.Controllers
@@ -26,20 +27,33 @@ namespace Server.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<bool> Register([FromBody]string accountDetailes)
+        public async Task<OkObjectResult> Register([FromBody]string accountDetailes)
         {
             var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(accountDetailes);
-            string r = _accountManager.Get();
 
-            return true;
+            SecureString password = new SecureString();
+            for (int i = 0; i < unAcc.Password.Length; i++)
+            {
+                password.AppendChar(unAcc.Password[i]);
+            }
+
+            bool r = _accountManager.Add(new AccountModel { Username = unAcc.Username, Email = unAcc.Email, Password = password });
+
+            return Ok(r);
         }
 
         [HttpGet]
         [Route("login/{loginCredentials}")]
-        public async Task<AccountModel> Login(string loginCredentials)
+        public async Task<OkObjectResult> Login(string loginCredentials)
         {
             var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(loginCredentials);
-            return new AccountModel { Email = "correctemail@gmail.com", Username = unAcc.Username };
+
+            var acc = _accountManager.GetByUsername(unAcc.Username);
+
+            if (acc == null)
+                throw new Exception("acc");
+
+            return Ok(acc);
         }
     }
 }

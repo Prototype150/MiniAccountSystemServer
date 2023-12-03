@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Server.Models
+namespace DLL.Models
 {
     public class AccountModel : LoginCredentialsModel
     {

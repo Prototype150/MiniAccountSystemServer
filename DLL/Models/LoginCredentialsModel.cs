@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Server.Models
+namespace DLL.Models
 {
     public class LoginCredentialsModel
     {
@@ -15,6 +15,8 @@ namespace Server.Models
             Username = username;
             Password = password;
         }
+
+        public int Id { get; set; }
 
         [JsonPropertyName("username")]
         public string Username { get; set; }

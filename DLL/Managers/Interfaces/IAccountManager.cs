@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DLL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace DLL.Managers.Interfaces
 {
     public interface IAccountManager
     {
-        string Get();
+        AccountModel GetByUsername(string username);
+        bool Add(AccountModel account);
     }
 }
