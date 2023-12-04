@@ -2,6 +2,7 @@
 using DLL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text.Json;
 
@@ -27,7 +28,7 @@ namespace Server.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<OkObjectResult> Register([FromBody]string accountDetailes)
+        public async Task<ObjectResult> Register([FromBody]string accountDetailes)
         {
             var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(accountDetailes);
 
@@ -39,19 +40,21 @@ namespace Server.Controllers
 
             bool r = _accountManager.Add(new AccountModel { Username = unAcc.Username, Email = unAcc.Email, Password = password });
 
-            return Ok(r);
+            return r ? Ok(r) : BadRequest(r);
         }
 
         [HttpGet]
         [Route("login/{loginCredentials}")]
-        public async Task<OkObjectResult> Login(string loginCredentials)
+        public async Task<ActionResult> Login(string loginCredentials)
         {
             var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(loginCredentials);
 
             var acc = _accountManager.GetByUsername(unAcc.Username);
 
             if (acc == null)
-                throw new Exception("acc");
+                return BadRequest("login");
+            else if (Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(acc.Password)) != unAcc.Password)
+                return BadRequest("password");
 
             return Ok(acc);
         }
