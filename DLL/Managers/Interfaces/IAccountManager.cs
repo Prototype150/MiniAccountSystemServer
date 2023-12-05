@@ -10,6 +10,6 @@ namespace DLL.Managers.Interfaces
     public interface IAccountManager
     {
         AccountModel GetByUsername(string username);
-        bool Add(AccountModel account);
+        string Add(AccountModel account);
     }
 }

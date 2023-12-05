@@ -24,15 +24,16 @@ namespace DLL.Managers
             return _accounts.FirstOrDefault(x => x.Username == username);
         }
 
-        public bool Add(AccountModel account)
+        public string Add(AccountModel account)
         {
-            if (string.IsNullOrWhiteSpace(account.Username) || string.IsNullOrWhiteSpace(account.Email) || _accounts.FirstOrDefault(x => x.Username == account.Username) != null)
-                return false;
-
+            if (_accounts.FirstOrDefault(x => x.Username == account.Username) != null)
+                return "username";
+            else if (_accounts.FirstOrDefault(x => x.Email == account.Email) != null)
+                return "email";
             account.Id = _counter++;
             _accounts.Add(account);
 
-            return true;
+            return "ok";
         }
     }
 }

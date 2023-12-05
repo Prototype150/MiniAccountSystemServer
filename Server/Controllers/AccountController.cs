@@ -32,15 +32,25 @@ namespace Server.Controllers
         {
             var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(accountDetailes);
 
+            if (string.IsNullOrWhiteSpace(unAcc.Username))
+                return BadRequest("empty:username");
+            if (string.IsNullOrWhiteSpace(unAcc.Email))
+                return BadRequest("empty:email");
+            if (string.IsNullOrWhiteSpace(unAcc.Password))
+                return BadRequest("empty:password");
+
             SecureString password = new SecureString();
             for (int i = 0; i < unAcc.Password.Length; i++)
             {
                 password.AppendChar(unAcc.Password[i]);
             }
 
-            bool r = _accountManager.Add(new AccountModel { Username = unAcc.Username, Email = unAcc.Email, Password = password });
+            string r = _accountManager.Add(new AccountModel { Username = unAcc.Username, Email = unAcc.Email, Password = password });
 
-            return r ? Ok(r) : BadRequest(r);
+            if (r == "username" || r == "email")
+                return BadRequest(r);
+
+            return Ok(r);
         }
 
         [HttpGet]
@@ -48,6 +58,11 @@ namespace Server.Controllers
         public async Task<ActionResult> Login(string loginCredentials)
         {
             var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(loginCredentials);
+
+            if (string.IsNullOrWhiteSpace(unAcc.Username))
+                return BadRequest("empty:username");
+            if (string.IsNullOrWhiteSpace(unAcc.Password))
+                return BadRequest("empty:password");
 
             var acc = _accountManager.GetByUsername(unAcc.Username);
 
