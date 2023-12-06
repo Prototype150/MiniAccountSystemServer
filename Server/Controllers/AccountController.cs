@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Server.Controllers
 {
@@ -21,8 +22,11 @@ namespace Server.Controllers
 
         private class UnsecureAccountModel
         {
+            [JsonPropertyName("username")]
             public string Username { get; set; }
+            [JsonPropertyName("password")]
             public string Password { get; set; }
+            [JsonPropertyName("email")]
             public string Email { get; set; }
         }
 
@@ -30,7 +34,16 @@ namespace Server.Controllers
         [Route("register")]
         public async Task<ObjectResult> Register([FromBody]string accountDetailes)
         {
-            var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(accountDetailes);
+            UnsecureAccountModel unAcc;
+
+            try
+            {
+                unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(accountDetailes);
+            }
+            catch(JsonException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             if (string.IsNullOrWhiteSpace(unAcc.Username))
                 return BadRequest("empty:username");
@@ -57,7 +70,15 @@ namespace Server.Controllers
         [Route("login/{loginCredentials}")]
         public async Task<ActionResult> Login(string loginCredentials)
         {
-            var unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(loginCredentials);
+            UnsecureAccountModel unAcc;
+            try
+            {
+                unAcc = JsonSerializer.Deserialize<UnsecureAccountModel>(loginCredentials);
+            }
+            catch(JsonException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             if (string.IsNullOrWhiteSpace(unAcc.Username))
                 return BadRequest("empty:username");
